@@ -1,0 +1,312 @@
+<!doctype html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <title>oldweb.today</title>
+	<link rel="canonical" href="https://classic.oldweb.today" />
+        <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+      ga('create', 'UA-768502-10', 'auto');
+      ga('send', 'pageview');
+    </script>
+    <script src="static/jquery-2.1.4.min.js"></script>
+    <!-- Skeleton -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="static/normalize.css">
+    <link rel="stylesheet" href="static/skeleton.css">
+    <!-- Viz -->
+    <script src="d3.v3.min.js"></script>
+    <script src="static/timemap.js"></script>
+    <!-- Main Netcapsule script -->
+    <link rel="stylesheet" href="static/main.css">
+    <link rel="stylesheet" href="static/dropdown.css">
+    <script>
+        var coll = undefined;
+        var url = undefined;
+        var curr_ts = undefined;
+        $(function() {
+            $("#mainform").submit(function(e) {
+                e.preventDefault();
+                url = $("#urlinput").val();
+                if (!coll || !curr_ts || !url) {
+                    $("#invalid-form").show();
+                    return;
+                }
+                var full_url = window.location.origin + "/" + coll + "/" + curr_ts + "/" + url;
+            });
+            function reset_error() {
+                if (coll && curr_ts && url) {
+                    $("#invalid-form").hide();
+                }
+            }
+            $("#urlinput").blur(reset_error);
+            $("#browser-input").change(reset_error);
+            $("#urlinput").blur(function() {
+                url = $("#urlinput").val();
+            });
+            url = $("#urlinput").val();
+            function random_browser() {
+                // Pick random browser
+                var browsers = $("#browser-selector td[data-path]");
+                if (browsers.length) {
+                    var i = Math.round(Math.random() * browsers.length);
+                    $(browsers[i]).trigger('click');
+                }
+            }
+            setTimeout(random_browser, 50);
+            $('.fold > label > a').on('click', function(){
+                $(this).parent().parent().toggleClass('open');
+            });
+        });
+    </script>
+    <script src="static/shared.js"></script>
+</head>
+<body id="frontpage">
+    <main class="container">
+        <h1 class="logo">oldweb.today</h1>
+        <form id="mainform">
+            <div class="row">
+                <div class="one columns">
+                    <label for="browser-dropdown">browser</label>
+                </div>
+                <div class="nine columns">
+                    <div id="browser-dropdown" class="dropdown">
+                        <span id="browser-icon-group">
+                            <img id="browser-icon" class="hidden" />
+                            <label id="browser-label"></label>
+                        </span>
+                        <span id="browser-text">Select a browser</span>
+                        <div class="dropdown-button">
+                            <span class="arrow-down"></span>
+                        </div>
+                    </div>
+                    <label class="browser-about"><a id="about-link" href="#" target="_blank">about this browser</a></label>
+                </div>
+            </div>
+            <div class="row">
+                <div class="one columns">
+                    <label for="urlinput">URL</label>
+                </div>
+                <div class="seven columns">
+                    <input type="text" name="url" class="u-full-width" id="urlinput" value="" placeholder="http://">
+                </div>
+            </div>
+            <div class="row">
+                <div class="one columns">
+                    <label for="datetime-dropdown">date</label>
+                </div>
+                <div class="nine columns">
+                    <div id="datetime-dropdown" class="dropdown">
+                        <input id="datetime" class="drop-skip datetime-string"/>
+                        <div class="dropdown-button">
+                            <span class="arrow-down"></span>
+                        </div>
+                    </div> 
+                </div>
+            </div>
+            <div id="invalid-form">Please select a browser, url and a date.</div>
+            <button type="submit" class="button-primary">Surf The Old Web!</button>
+            <a class="button" href="random">I'm feeling Random!</a>
+            <div class="fold">
+                <label><a>About / How it works</a></label>
+                <div>
+                    <strong>oldweb.today</strong> is built with open source tools:
+                    <ul>
+                        <li><a href="https://www.docker.com/">Docker containers</a> to manage user sessions and scale across machines.</li>
+                        <li><a href="https://www.winehq.org/">Wine</a>, <a href="http://basilisk.cebix.net/">Basilisk</a> and <a href="http://sheepshaver.cebix.net/">Sheepshaver</a> and <a href="http://previous.alternative-system.com/">Previous</a> emulators are used to run old browsers on legacy platforms.</li>
+                        <li><a href="https://github.com/ikreymer/pywb">pywb</a> is used as the web archive replay proxy system.</li>
+                        <li><a href="https://kanaka.github.io/noVNC/">noVNC</a> provides VNC support in HTML over Websockets.</li>
+                        <li>The <a href="http://mementoweb.org/about/">Memento Web API</a> and <a href="https://github.com/oduwsdl/memgator">MemGator</a> are used to communicate with web archives.</li>
+                        <li>Random page list compiled with help from <a href="https://twitter.com/muffinista">@muffinista</a></li>
+                    </ul>
+                    <br>
+                    <a href="https://github.com/ikreymer/netcapsule">Full source code available on Github.</a><br>
+                    <br>
+                    The archived web pages are available courtesy of these public web archives:
+                    <ul id="statsHosts">
+    <li data-id="rhizome">
+        <a target="_blank" href="http://webenact.rhizome.org/">Rhizome Webenact</a>
+    </li>
+    <li data-id="ia">
+        <a target="_blank" href="https://archive.org/web/">Internet Archive</a>
+    </li>
+    <li data-id="pwa">
+        <a target="_blank" href="http://arquivo.pt/">Portuguese Web Archive</a>
+    </li>
+    <li data-id="ba">
+        <a target="_blank" href="http://www.bibalex.org/isis/frontend/archive/archive_web.aspx">Bibliotheca Alexandrina Web Archive</a>
+    </li>
+    <li data-id="blarchive">
+        <a target="_blank" href="http://www.webarchive.org.uk/ukwa/">UK Web Archive</a>
+    </li>
+    <li data-id="loc">
+        <a target="_blank" href="http://loc.gov/websites/">Library of Congress</a>
+    </li>
+    <li data-id="archiveit">
+        <a target="_blank" href="https://archive-it.org/">Archive-It</a>
+    </li>
+    <li data-id="is">
+        <a target="_blank" href="http://vefsafn.is/">Icelandic Web Archive</a>
+    </li>
+    <li data-id="swa">
+        <a target="_blank" href="https://swap.stanford.edu/">Stanford Web Archive</a>
+    </li>
+    <li data-id="es">
+        <a target="_blank" href="http://veebiarhiiv.digar.ee/">Estonian Web Archive</a>
+    </li>
+    <li data-id="si">
+        <a target="_blank" href="http://www.zal-lj.si/">Slovenian Web Archive</a>
+    </li>
+    <li data-id="nara">
+        <a target="_blank" href="http://www.webharvest.gov/">The National Archives and Records Administration</a>
+    </li>
+    <li data-id="ukparliament">
+        <a target="_blank" href="http://webarchive.parliament.uk/">UK Parliament Web Archive</a>
+    </li>
+    <li data-id="proni">
+        <a target="_blank" href="http://webarchive.proni.gov.uk/">Public Record Office of Northern Ireland</a>
+    </li>
+    <li data-id="uknatarchives">
+        <a target="_blank" href="http://www.nationalarchives.gov.uk/webarchive/">UK National Archives</a>
+    </li>
+</ul>
+                    <br>
+                    <br>
+                </div>
+            </div>
+        </form>
+        <div class="row" class="section">
+            <div class="seven columns">
+                A service by
+                <div class="support">
+                    <a class="support rhizome" href="http://rhizome.org/editorial/2015/nov/30/oldweb-today/"><img src="static/rhizome-tiny.png" alt="Rhizome"></a>
+                </div>
+                <div>Contact: oldweb.today@rhizome.org</div>
+            </div>
+        </div>
+    </main>
+    <div id="browser-selector" class="selector-menu">
+    <input type="hidden" name="browser-input" value="">
+    <table>
+        <thead>
+            <tr>
+                <th>Windows</th>
+                <th>Macintosh</th>
+                <th>Linux</th>
+                <th class="menu-selector-close"><span>&#10006;</span></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr class="r-odd">
+                <td></td>
+                <td></td>
+                <td data-path="mosaic" data-about-url="https://en.wikipedia.org/wiki/Mosaic_%28web_browser%29">
+                    <img src="static/icons/mosaic.png">
+                    <label>2.2</label>
+                </td>
+                <th>NSCA Mosaic</th>
+            </tr>
+            <tr class="r-even">
+                <td></td>
+                <td data-path="nsmac3" data-about-url="https://en.wikipedia.org/wiki/Netscape_%28web_browser%29">
+                    <img src="static/icons/mac-ns2-3.png">
+                    <label>3.04</label>
+                </td>
+                <td></td>
+                <th rowspan="3">Netscape Navigator</th>
+            </tr>
+            <tr class="r-even">
+                <td data-path="nswin" data-about-url="https://en.wikipedia.org/wiki/Netscape_%28web_browser%29">
+                    <img src="static/icons/win32-ns4.png">
+                    <label>4.08</label>
+                    <input type="radio" name="browser" value="nswin">
+                </td>
+                <td data-path="nsmac4" data-about-url="https://en.wikipedia.org/wiki/Netscape_%28web_browser%29">
+                    <img src="static/icons/mac-ns4.png">
+                    <label>4.08</label>
+                    <input type="radio" name="browser" value="nsmac4">
+                </td>
+                <td></td>
+            </tr>
+            <tr class="r-even">
+                <td></td>
+                <td data-path="nsmac4.8" data-about-url="https://en.wikipedia.org/wiki/Netscape_%28web_browser%29">
+                    <img src="static/icons/mac-ns4.png">
+                    <label>4.8</label>
+                </td>
+                <td data-path="nslinux" data-about-url="https://en.wikipedia.org/wiki/Netscape_%28web_browser%29">
+                    <img src="static/icons/win32-ns4.png">
+                    <label>4.79</label>
+                </td>
+            </tr>
+            <tr class="r-odd">
+                <td data-path="ie4" data-about-url="https://en.wikipedia.org/wiki/Internet_Explorer_4">
+                    <img src="static/icons/win32-ie4.png">
+                    <label>4.0</label>
+                    <input type="radio" name="browser" value="ie4" checked>
+                </td>
+                <td data-path="ie4mac" data-about-url="https://en.wikipedia.org/wiki/Internet_Explorer_for_Mac#Internet_Explorer_4.0_for_Macintosh">
+                    <img src="static/icons/mac-ie4.png">
+                    <label>4.01</label>
+                </td>
+                <td></td>
+                <th rowspan="2">Internet Explorer</th>
+            </tr>
+            <tr class="r-odd">
+                <td data-path="ie5.5" data-about-url="https://en.wikipedia.org/wiki/Internet_Explorer_5">
+                    <img src="static/icons/win32-ie5.5.png">
+                    <label>5.5</label>
+                </td>
+                <td data-path="ie5mac" data-about-url="https://en.wikipedia.org/wiki/Internet_Explorer_for_Mac#Internet_Explorer_5_Macintosh_Edition">
+                    <img src="static/icons/mac-ie5.1.png">
+                    <label>5.1.7</label>
+                </td>
+                <td></td>
+            </tr>
+            <tr class="r-even">
+                <td data-path="safari" data-about-url="https://en.wikipedia.org/wiki/Safari_(web_browser)#Safari_3">
+                    <img src="static/icons/safari.png">
+                    <label>3.2.3</label>
+                </td>
+                <td></td>
+                <td></td>
+                <th>Apple<br>Safari</th>
+            </tr>
+            <tr class="r-odd">
+                <td></td>
+                <td></td>
+                <td data-path="firefox" data-about-url="https://en.wikipedia.org/wiki/Firefox">
+                    <img src="static/icons/firefox.png">
+                    <label>40</label>
+                </td>
+                <th>Mozilla Firefox</th>
+            </tr>
+            <tr class="r-even">
+                <td></td>
+                <td></td>
+                <td data-path="chromium5" data-about-url="https://en.wikipedia.org/wiki/Chromium_(web_browser)">
+                    <img src="static/icons/chromium.png">
+                    <label>5</label>
+                </td>
+                <th>Chromium</th>
+            </tr>
+            <tr class="r-odd">
+                <td></td>
+                <td></td>
+                <td data-path="chrome" data-about-url="https://en.wikipedia.org/wiki/Google_Chrome">
+                    <img src="static/icons/chrome.png">
+                    <label>46</label>
+                </td>
+                <th>Google Chrome</th>
+            </tr>
+        </tbody>
+    </table>
+</div>
+<div id="datetime-selector" class="selector-menu">
+    <div class="menu-selector-close"><span>&#10006;</span></div>
+    <label id="datetime-info"></label>
+    <div id="spark"></div>
+</div>
+<center><font size="2">This is a free demo result from the Wayback Machine Downloader. <a href="http://www.waybackmachinedownloader.com/en/">Click here</a> to download the full version.</font></center></body>
